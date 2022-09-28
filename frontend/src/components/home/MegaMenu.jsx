@@ -1,0 +1,82 @@
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom';
+import AppContext from '../AppContext';
+
+export class MegaMenu extends Component {
+    static contextType = AppContext;
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount(){
+        this.MegaMenu();
+    }
+
+    MegaMenu(){
+
+        let acc = document.getElementsByClassName('accordion');
+        let clicked = 0;
+        for (let i = 0; i < acc.length; i++) {
+            acc[i].addEventListener('click',function () {
+                acc[clicked].classList.remove("active");
+                acc[clicked].nextElementSibling.style.maxHeight = null;
+                let panel = this.nextElementSibling;
+                if (i !== clicked) {
+                    clicked = i;
+                    this.classList.toggle("active");
+                    panel.style.maxHeight= panel.scrollHeight+ "px"
+                }
+                else{
+                    panel.style.maxHeight = null;
+                    if (i === 0) {
+                        clicked = 1;
+                    }
+                    else{
+                        clicked = 0;
+                    }
+                }
+            });
+        }
+
+    }
+    MenuItemClick=(event)=>{
+        event.target.classList.toggle("active");
+        var panel = event.target.nextElementSibling;
+        if(panel.style.maxHeight){
+             panel.style.maxHeight = null;
+        }else{
+             panel.style.maxHeight= panel.scrollHeight+ "px"
+        }
+
+    }
+  render() {
+    const categories = this.context.categories;
+    let cat = categories.map(item => {
+        return <div key={item.id}>
+             <button onClick={this.MenuItemClick} className="accordion">
+                  <img className="accordionMenuIcon" src={item.image} />&nbsp; {item.name}
+             </button>
+             <div className="panel">
+                  <ul>
+                       {item.sub_categories.map(sub => {
+                            return <li><Link to={"/subproductcategory/"+sub.id} className="accordionItem" > {sub.sub_name}</Link></li>;
+                       })}
+                  </ul>
+             </div>
+        </div>;
+
+   });
+    return (
+        <div className="accordionMenuDiv">
+            <div className="accordionMenuDivInside">
+                {cat}
+
+            </div>
+
+        </div>
+    )
+  }
+}
+
+export default MegaMenu
